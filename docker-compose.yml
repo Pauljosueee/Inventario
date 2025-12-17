@@ -1,12 +1,15 @@
+version: '3.8'
+
 services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.nginx
     ports:
       - "80:80"
     depends_on:
       - backend
+    networks:
+      - inventario-network
 
   backend:
     build:
@@ -17,6 +20,8 @@ services:
       - mariadb
     environment:
       DATABASE_URL: mysql://inventario_user:inventario_pass@mariadb:3306/inventario
+    networks:
+      - inventario-network
 
   mariadb:
     image: mariadb:10.6
@@ -27,6 +32,12 @@ services:
       MYSQL_PASSWORD: inventario_pass
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - inventario-network
 
 volumes:
   mariadb_data:
+
+networks:
+  inventario-network:
+    driver: bridge
